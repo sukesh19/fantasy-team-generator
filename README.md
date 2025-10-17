@@ -1,6 +1,6 @@
 # Fantasy Cricket Team Generator
 
-This repository contains the code for a Fantasy Cricket Team Generator application.
+**This repository contains the code for a Fantasy Cricket Team Generator application.**
 
 ## Description
 
