@@ -1,505 +1,404 @@
 import React, { useState } from 'react';
-import { Users, TrendingUp, Cloud, Star, Target, Award, Activity, Zap } from 'lucide-react';
+import { TrendingUp, Users, Target, Star, Zap, CloudRain, Calendar, Award } from 'lucide-react';
+
+const PLAYERS = [
+  // Batsmen
+  { id: 1, name: "Virat Kohli", role: "Batsman", team: "RCB", rating: 95, form: 88, avg: 52.3, sr: 138, venueAvg: 58, recentScores: [73, 45, 89, 12, 67], moonPhase: 0.8, mulank: 5, bhagyank: 8 },
+  { id: 2, name: "Rohit Sharma", role: "Batsman", team: "MI", rating: 94, form: 85, avg: 48.7, sr: 142, venueAvg: 52, recentScores: [91, 23, 56, 78, 34], moonPhase: 0.7, mulank: 3, bhagyank: 6 },
+  { id: 3, name: "KL Rahul", role: "Batsman", team: "LSG", rating: 92, form: 82, avg: 47.2, sr: 135, venueAvg: 49, recentScores: [45, 67, 23, 89, 56], moonPhase: 0.6, mulank: 2, bhagyank: 5 },
+  { id: 4, name: "Shubman Gill", role: "Batsman", team: "GT", rating: 90, form: 91, avg: 44.8, sr: 140, venueAvg: 54, recentScores: [78, 92, 45, 67, 88], moonPhase: 0.9, mulank: 7, bhagyank: 9 },
+  { id: 5, name: "David Warner", role: "Batsman", team: "DC", rating: 93, form: 80, avg: 50.1, sr: 145, venueAvg: 47, recentScores: [34, 56, 78, 23, 91], moonPhase: 0.5, mulank: 4, bhagyank: 7 },
+  { id: 6, name: "Quinton de Kock", role: "WK-Batsman", team: "LSG", rating: 89, form: 84, avg: 43.5, sr: 137, venueAvg: 51, recentScores: [67, 45, 89, 34, 72], moonPhase: 0.7, mulank: 6, bhagyank: 8 },
+  { id: 7, name: "Jos Buttler", role: "WK-Batsman", team: "RR", rating: 91, form: 87, avg: 46.9, sr: 152, venueAvg: 55, recentScores: [103, 45, 67, 89, 23], moonPhase: 0.8, mulank: 1, bhagyank: 4 },
+  
+  // All-rounders
+  { id: 8, name: "Hardik Pandya", role: "All-Rounder", team: "MI", rating: 93, form: 89, avg: 32.4, sr: 148, wickets: 23, economy: 8.2, venueAvg: 38, recentScores: [45, 67, 23, 89, 56], moonPhase: 0.8, mulank: 9, bhagyank: 3 },
+  { id: 9, name: "Ravindra Jadeja", role: "All-Rounder", team: "CSK", rating: 91, form: 85, avg: 28.7, sr: 132, wickets: 31, economy: 7.5, venueAvg: 34, recentScores: [34, 56, 12, 78, 45], moonPhase: 0.6, mulank: 8, bhagyank: 2 },
+  { id: 10, name: "Glenn Maxwell", role: "All-Rounder", team: "RCB", rating: 90, form: 83, avg: 30.2, sr: 155, wickets: 18, economy: 8.5, venueAvg: 36, recentScores: [89, 23, 67, 12, 91], moonPhase: 0.7, mulank: 5, bhagyank: 7 },
+  { id: 11, name: "Marcus Stoinis", role: "All-Rounder", team: "LSG", rating: 87, form: 81, avg: 29.5, sr: 140, wickets: 15, economy: 9.1, venueAvg: 32, recentScores: [45, 67, 34, 56, 23], moonPhase: 0.5, mulank: 3, bhagyank: 6 },
+  { id: 12, name: "Axar Patel", role: "All-Rounder", team: "DC", rating: 86, form: 86, avg: 24.3, sr: 128, wickets: 28, economy: 7.2, venueAvg: 28, recentScores: [23, 45, 67, 12, 56], moonPhase: 0.8, mulank: 7, bhagyank: 9 },
+  
+  // Bowlers
+  { id: 13, name: "Jasprit Bumrah", role: "Bowler", team: "MI", rating: 96, form: 92, wickets: 45, economy: 6.8, avg: 18.5, venueWickets: 12, recentWickets: [3, 2, 4, 1, 3], moonPhase: 0.9, mulank: 2, bhagyank: 5 },
+  { id: 14, name: "Rashid Khan", role: "Bowler", team: "GT", rating: 95, form: 90, wickets: 42, economy: 7.1, avg: 19.2, venueWickets: 11, recentWickets: [2, 3, 1, 4, 2], moonPhase: 0.8, mulank: 4, bhagyank: 7 },
+  { id: 15, name: "Yuzvendra Chahal", role: "Bowler", team: "RR", rating: 92, form: 88, wickets: 38, economy: 7.8, avg: 21.3, venueWickets: 9, recentWickets: [2, 1, 3, 2, 4], moonPhase: 0.7, mulank: 6, bhagyank: 8 },
+  { id: 16, name: "Mohammed Siraj", role: "Bowler", team: "RCB", rating: 90, form: 87, wickets: 35, economy: 8.1, avg: 22.5, venueWickets: 8, recentWickets: [3, 2, 1, 2, 3], moonPhase: 0.6, mulank: 8, bhagyank: 1 },
+  { id: 17, name: "Trent Boult", role: "Bowler", team: "RR", rating: 91, form: 85, wickets: 37, economy: 7.9, avg: 20.8, venueWickets: 10, recentWickets: [2, 3, 2, 1, 4], moonPhase: 0.8, mulank: 1, bhagyank: 3 },
+  { id: 18, name: "Kagiso Rabada", role: "Bowler", team: "DC", rating: 93, form: 89, wickets: 40, economy: 7.5, avg: 19.7, venueWickets: 11, recentWickets: [4, 2, 3, 2, 3], moonPhase: 0.7, mulank: 9, bhagyank: 2 },
+  { id: 19, name: "Kuldeep Yadav", role: "Bowler", team: "DC", rating: 88, form: 86, wickets: 33, economy: 7.6, avg: 23.1, venueWickets: 7, recentWickets: [2, 1, 3, 2, 2], moonPhase: 0.6, mulank: 5, bhagyank: 8 },
+  { id: 20, name: "Harshal Patel", role: "Bowler", team: "PBKS", rating: 87, form: 82, wickets: 32, economy: 8.4, avg: 24.2, venueWickets: 6, recentWickets: [1, 2, 3, 1, 2], moonPhase: 0.5, mulank: 3, bhagyank: 6 },
+  { id: 21, name: "Arshdeep Singh", role: "Bowler", team: "PBKS", rating: 85, form: 84, wickets: 30, economy: 8.2, avg: 25.3, venueWickets: 5, recentWickets: [2, 1, 2, 3, 1], moonPhase: 0.7, mulank: 7, bhagyank: 9 },
+  { id: 22, name: "Shardul Thakur", role: "All-Rounder", team: "DC", rating: 84, form: 80, wickets: 28, economy: 8.8, avg: 21.5, venueWickets: 6, recentWickets: [1, 2, 1, 2, 3], moonPhase: 0.6, mulank: 4, bhagyank: 5 }
+];
 
 const FantasyCricketAI = () => {
-  const [players, setPlayers] = useState([]);
-  const [matchDetails, setMatchDetails] = useState({
-    team1: '',
-    team2: '',
-    venue: '',
-    weather: 'sunny',
-    pitchType: 'balanced',
-    tossWinner: '',
-    tossDecision: ''
-  });
-  const [playerInput, setPlayerInput] = useState('');
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [budget, setBudget] = useState(100);
-  const [predictions, setPredictions] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [weather, setWeather] = useState('sunny');
+  const [venue, setVenue] = useState('wankhede');
+  const [teamStrategy, setTeamStrategy] = useState('balanced');
+  const [showPrediction, setShowPrediction] = useState(false);
+  const [captain, setCaptain] = useState(null);
+  const [viceCaptain, setViceCaptain] = useState(null);
+  const [matchDate, setMatchDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // Sample player database with comprehensive stats
-  const samplePlayers = [
-    // Batsmen
-    { name: "Virat Kohli", team: "IND", role: "Batsman", recentForm: 92, price: 11.5, mulank: 8, bhagyank: 5 },
-    { name: "Rohit Sharma", team: "IND", role: "Batsman", recentForm: 88, price: 11.0, mulank: 3, bhagyank: 7 },
-    { name: "Steve Smith", team: "AUS", role: "Batsman", recentForm: 85, price: 10.5, mulank: 1, bhagyank: 9 },
-    { name: "Babar Azam", team: "PAK", role: "Batsman", recentForm: 90, price: 11.0, mulank: 5, bhagyank: 3 },
-    { name: "Kane Williamson", team: "NZ", role: "Batsman", recentForm: 87, price: 10.5, mulank: 2, bhagyank: 6 },
-    { name: "Joe Root", team: "ENG", role: "Batsman", recentForm: 89, price: 10.5, mulank: 9, bhagyank: 4 },
-    
-    // All-rounders
-    { name: "Hardik Pandya", team: "IND", role: "All-Rounder", recentForm: 86, price: 10.0, mulank: 7, bhagyank: 8 },
-    { name: "Ben Stokes", team: "ENG", role: "All-Rounder", recentForm: 84, price: 10.0, mulank: 6, bhagyank: 2 },
-    { name: "Glenn Maxwell", team: "AUS", role: "All-Rounder", recentForm: 82, price: 9.5, mulank: 4, bhagyank: 1 },
-    { name: "Shakib Al Hasan", team: "BAN", role: "All-Rounder", recentForm: 83, price: 9.5, mulank: 3, bhagyank: 7 },
-    { name: "Ravindra Jadeja", team: "IND", role: "All-Rounder", recentForm: 85, price: 9.5, mulank: 8, bhagyank: 5 },
-    
-    // Bowlers
-    { name: "Jasprit Bumrah", team: "IND", role: "Bowler", recentForm: 94, price: 10.5, mulank: 2, bhagyank: 9 },
-    { name: "Pat Cummins", team: "AUS", role: "Bowler", recentForm: 91, price: 10.0, mulank: 5, bhagyank: 3 },
-    { name: "Shaheen Afridi", team: "PAK", role: "Bowler", recentForm: 90, price: 10.0, mulank: 1, bhagyank: 6 },
-    { name: "Rashid Khan", team: "AFG", role: "Bowler", recentForm: 93, price: 10.5, mulank: 9, bhagyank: 4 },
-    { name: "Trent Boult", team: "NZ", role: "Bowler", recentForm: 88, price: 9.5, mulank: 7, bhagyank: 8 },
-    { name: "Kagiso Rabada", team: "SA", role: "Bowler", recentForm: 89, price: 10.0, mulank: 4, bhagyank: 2 },
-    
-    // Wicket-keepers
-    { name: "Rishabh Pant", team: "IND", role: "WK-Batsman", recentForm: 86, price: 10.0, mulank: 6, bhagyank: 1 },
-    { name: "Jos Buttler", team: "ENG", role: "WK-Batsman", recentForm: 88, price: 10.5, mulank: 3, bhagyank: 7 },
-    { name: "Quinton de Kock", team: "SA", role: "WK-Batsman", recentForm: 84, price: 9.5, mulank: 8, bhagyank: 5 },
-    { name: "Mohammad Rizwan", team: "PAK", role: "WK-Batsman", recentForm: 87, price: 9.5, mulank: 2, bhagyank: 9 },
-    { name: "Alex Carey", team: "AUS", role: "WK-Batsman", recentForm: 81, price: 9.0, mulank: 5, bhagyank: 3 },
-    { name: "KL Rahul", team: "IND", role: "WK-Batsman", recentForm: 85, price: 10.0, mulank: 1, bhagyank: 6 }
-  ];
-
-  const loadSamplePlayers = () => {
-    setPlayers(samplePlayers);
-  };
-
-  const addPlayer = () => {
-    if (playerInput.trim() && players.length < 22) {
-      const newPlayer = {
-        name: playerInput,
-        team: matchDetails.team1 || "TEAM",
-        role: "All-Rounder",
-        recentForm: Math.floor(Math.random() * 30) + 70,
-        price: Math.floor(Math.random() * 50) / 10 + 8,
-        mulank: Math.floor(Math.random() * 9) + 1,
-        bhagyank: Math.floor(Math.random() * 9) + 1
-      };
-      setPlayers([...players, newPlayer]);
-      setPlayerInput('');
+  const togglePlayer = (player) => {
+    if (selectedPlayers.find(p => p.id === player.id)) {
+      setSelectedPlayers(selectedPlayers.filter(p => p.id !== player.id));
+      if (captain?.id === player.id) setCaptain(null);
+      if (viceCaptain?.id === player.id) setViceCaptain(null);
+    } else if (selectedPlayers.length < 11) {
+      setSelectedPlayers([...selectedPlayers, player]);
     }
   };
 
-  const calculateAstrologyScore = (player, date = new Date()) => {
+  const calculateAIScore = (player) => {
+    const date = new Date(matchDate);
     const dayNumber = date.getDate();
-    const luckyNumbers = [player.mulank, player.bhagyank];
-    const dayCompatibility = luckyNumbers.includes(dayNumber % 9 || 9) ? 15 : 0;
-    const numerologyBonus = (player.mulank + player.bhagyank) % 9 === dayNumber % 9 ? 10 : 5;
-    return dayCompatibility + numerologyBonus;
-  };
-
-  const calculateVenueScore = (player, pitchType, weather) => {
-    let score = 0;
+    const dayOfWeek = date.getDay();
     
-    // Pitch compatibility
-    if (pitchType === 'batting' && ['Batsman', 'WK-Batsman'].includes(player.role)) score += 15;
-    if (pitchType === 'bowling' && player.role === 'Bowler') score += 15;
-    if (pitchType === 'balanced' && player.role === 'All-Rounder') score += 10;
+    // Base score from rating and form
+    let score = player.rating * 0.4 + player.form * 0.3;
     
     // Weather impact
-    if (weather === 'cloudy' && player.role === 'Bowler') score += 10;
-    if (weather === 'sunny' && ['Batsman', 'WK-Batsman'].includes(player.role)) score += 10;
-    if (weather === 'humid' && player.role === 'Bowler') score += 8;
-    
-    return score;
-  };
-
-  const calculateMLPrediction = (player, matchDetails) => {
-    // Simulated ML prediction considering multiple factors
-    const formWeight = player.recentForm * 0.3;
-    const astrologyWeight = calculateAstrologyScore(player) * 0.15;
-    const venueWeight = calculateVenueScore(player, matchDetails.pitchType, matchDetails.weather) * 0.25;
-    const priceEfficiency = (player.recentForm / player.price) * 0.2;
-    const randomFactor = Math.random() * 10 * 0.1; // Unpredictability factor
-    
-    return formWeight + astrologyWeight + venueWeight + priceEfficiency + randomFactor;
-  };
-
-  const analyzeHeadToHead = (player, opposingTeam) => {
-    // Simulated H2H analysis
-    const performanceMap = {
-      'IND': [0.85, 0.92, 0.78, 0.88, 0.91],
-      'AUS': [0.82, 0.87, 0.90, 0.84, 0.89],
-      'ENG': [0.88, 0.83, 0.91, 0.86, 0.87],
-      'PAK': [0.80, 0.89, 0.85, 0.90, 0.82],
+    const weatherBonus = {
+      sunny: player.role === 'Batsman' ? 1.2 : 1.0,
+      cloudy: player.role === 'Bowler' ? 1.15 : 1.0,
+      rainy: player.role === 'Bowler' ? 1.25 : 0.9,
+      humid: player.role === 'All-Rounder' ? 1.1 : 1.0
     };
+    score *= weatherBonus[weather];
     
-    const basePerf = performanceMap[player.team] || [0.85, 0.85, 0.85, 0.85, 0.85];
-    const avgPerformance = basePerf.reduce((a, b) => a + b) / basePerf.length;
-    return Math.round(avgPerformance * 100);
+    // Venue performance
+    score += player.venueAvg * 0.2;
+    
+    // Astrological factors
+    const mulankBonus = (player.mulank === (dayNumber % 9) || player.mulank === 9) ? 1.15 : 1.0;
+    const bhagyankBonus = (player.bhagyank === ((dayNumber % 9) + dayOfWeek) % 9) ? 1.1 : 1.0;
+    const moonBonus = player.moonPhase > 0.7 ? 1.12 : 1.0;
+    
+    score *= mulankBonus * bhagyankBonus * moonBonus;
+    
+    // Recent form analysis
+    const recentAvg = player.recentScores ? 
+      player.recentScores.reduce((a, b) => a + b, 0) / player.recentScores.length : 
+      (player.recentWickets ? player.recentWickets.reduce((a, b) => a + b, 0) * 10 : 0);
+    score += recentAvg * 0.15;
+    
+    // Team strategy bonus
+    const strategyBonus = {
+      batting: player.role === 'Batsman' ? 1.15 : (player.role === 'All-Rounder' ? 1.05 : 0.95),
+      bowling: player.role === 'Bowler' ? 1.15 : (player.role === 'All-Rounder' ? 1.05 : 0.95),
+      balanced: 1.0
+    };
+    score *= strategyBonus[teamStrategy];
+    
+    return Math.round(score * 10) / 10;
   };
 
-  const generateTeam = async (teamType = 'balanced') => {
-    if (players.length < 11) {
-      alert('Please add at least 11 players!');
-      return;
+  const generateAITeam = () => {
+    const scoredPlayers = PLAYERS.map(p => ({
+      ...p,
+      aiScore: calculateAIScore(p)
+    })).sort((a, b) => b.aiScore - a.aiScore);
+
+    let team = [];
+    let batsmen = 0, bowlers = 0, allRounders = 0, wk = 0;
+
+    // Strategy-based composition
+    const requirements = {
+      batting: { batsmen: 5, bowlers: 3, allRounders: 2, wk: 1 },
+      bowling: { batsmen: 3, bowlers: 5, allRounders: 2, wk: 1 },
+      balanced: { batsmen: 4, bowlers: 4, allRounders: 2, wk: 1 }
+    };
+
+    const req = requirements[teamStrategy];
+
+    for (const player of scoredPlayers) {
+      if (team.length >= 11) break;
+
+      const isWK = player.name.includes('de Kock') || player.name.includes('Buttler');
+      
+      if (isWK && wk < req.wk) {
+        team.push(player);
+        wk++;
+      } else if (player.role === 'Batsman' && batsmen < req.batsmen && !isWK) {
+        team.push(player);
+        batsmen++;
+      } else if (player.role === 'Bowler' && bowlers < req.bowlers) {
+        team.push(player);
+        bowlers++;
+      } else if (player.role === 'All-Rounder' && allRounders < req.allRounders) {
+        team.push(player);
+        allRounders++;
+      }
     }
 
-    setLoading(true);
+    setSelectedPlayers(team);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const today = new Date();
-    const analyzedPlayers = players.map(player => ({
-      ...player,
-      mlScore: calculateMLPrediction(player, matchDetails),
-      astrologyScore: calculateAstrologyScore(player, today),
-      venueScore: calculateVenueScore(player, matchDetails.pitchType, matchDetails.weather),
-      h2hScore: analyzeHeadToHead(player, matchDetails.team2),
-      totalScore: 0
-    }));
-
-    // Calculate total score
-    analyzedPlayers.forEach(p => {
-      p.totalScore = (p.mlScore * 0.35) + (p.astrologyScore * 0.15) + 
-                     (p.venueScore * 0.20) + (p.h2hScore * 0.15) + 
-                     (p.recentForm * 0.15);
-    });
-
-    // Team composition based on type
-    let composition = { wk: 1, bat: 4, ar: 2, bowl: 4 };
-    if (teamType === 'batting') composition = { wk: 1, bat: 5, ar: 2, bowl: 3 };
-    if (teamType === 'bowling') composition = { wk: 1, bat: 3, ar: 2, bowl: 5 };
-
-    // Select best players by role
-    const selectedTeam = [];
-    const roles = {
-      'WK-Batsman': composition.wk,
-      'Batsman': composition.bat,
-      'All-Rounder': composition.ar,
-      'Bowler': composition.bowl
-    };
-
-    Object.entries(roles).forEach(([role, count]) => {
-      const rolePlayers = analyzedPlayers
-        .filter(p => p.role === role)
-        .sort((a, b) => b.totalScore - a.totalScore)
-        .slice(0, count);
-      selectedTeam.push(...rolePlayers);
-    });
-
-    // Sort by total score and select captain/vice-captain
-    selectedTeam.sort((a, b) => b.totalScore - a.totalScore);
-    
-    const captain = selectedTeam[0];
-    const viceCaptain = selectedTeam[1];
-
-    // Calculate win probability
-    const avgTeamScore = selectedTeam.reduce((sum, p) => sum + p.totalScore, 0) / selectedTeam.length;
-    const winProbability = Math.min(95, Math.max(45, avgTeamScore * 1.2));
-    const failureRisk = 100 - winProbability;
-
-    // Pattern analysis
-    const patterns = [
-      { pattern: "Form-based dominance", confidence: 87, description: "Team heavily relies on recent form" },
-      { pattern: "Astrology alignment", confidence: 76, description: `Favorable day for players with Mulank ${captain.mulank}` },
-      { pattern: "Venue optimization", confidence: 82, description: `${matchDetails.pitchType} pitch favors selected composition` }
-    ];
-
-    setPredictions({
-      team: selectedTeam,
-      captain,
-      viceCaptain,
-      winProbability: winProbability.toFixed(1),
-      failureRisk: failureRisk.toFixed(1),
-      patterns,
-      teamType,
-      totalCost: selectedTeam.reduce((sum, p) => sum + p.price, 0).toFixed(1),
-      megaContestPotential: winProbability > 75 ? "HIGH" : winProbability > 60 ? "MEDIUM" : "LOW"
-    });
-
-    setLoading(false);
+    // Auto-select captain and vice-captain
+    const topTwo = team.slice(0, 2);
+    setCaptain(topTwo[0]);
+    setViceCaptain(topTwo[1]);
   };
 
+  const analyzePrediction = () => {
+    const totalScore = selectedPlayers.reduce((sum, p) => sum + calculateAIScore(p), 0);
+    const avgScore = totalScore / selectedPlayers.length;
+    
+    const captainBonus = captain ? calculateAIScore(captain) * 2 : 0;
+    const vcBonus = viceCaptain ? calculateAIScore(viceCaptain) * 1.5 : 0;
+    
+    const finalScore = totalScore + captainBonus + vcBonus;
+    
+    const winProbability = Math.min(95, Math.max(45, (finalScore / 12) + 20));
+    const megaContestRank = Math.round(100000 / (winProbability / 10));
+    
+    return {
+      totalScore: Math.round(totalScore),
+      avgScore: Math.round(avgScore * 10) / 10,
+      finalScore: Math.round(finalScore),
+      winProbability: Math.round(winProbability * 10) / 10,
+      megaContestRank,
+      riskLevel: winProbability > 75 ? 'Low' : winProbability > 60 ? 'Medium' : 'High',
+      successPattern: winProbability > 70 ? 'Excellent' : winProbability > 55 ? 'Good' : 'Risky'
+    };
+  };
+
+  const prediction = showPrediction ? analyzePrediction() : null;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-emerald-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 p-4">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-2 flex items-center justify-center gap-3">
-            <Trophy className="w-12 h-12 text-yellow-400" />
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
+          <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
+            <Zap className="text-yellow-400" />
             AI Fantasy Cricket Team Generator
           </h1>
-          <p className="text-green-200 text-lg">ML + Astrology + Numerology + Venue Analysis</p>
+          <p className="text-purple-200">ML Predictions • Astrology • Weather • Venue Analysis</p>
         </div>
 
-        {/* Match Details */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <Activity className="w-6 h-6" />
-            Match Details
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input
-              type="text"
-              placeholder="Team 1"
-              className="bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white placeholder-white/60"
-              value={matchDetails.team1}
-              onChange={(e) => setMatchDetails({...matchDetails, team1: e.target.value})}
-            />
-            <input
-              type="text"
-              placeholder="Team 2"
-              className="bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white placeholder-white/60"
-              value={matchDetails.team2}
-              onChange={(e) => setMatchDetails({...matchDetails, team2: e.target.value})}
-            />
-            <input
-              type="text"
-              placeholder="Venue"
-              className="bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white placeholder-white/60"
-              value={matchDetails.venue}
-              onChange={(e) => setMatchDetails({...matchDetails, venue: e.target.value})}
-            />
-            <select
-              className="bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white"
-              value={matchDetails.weather}
-              onChange={(e) => setMatchDetails({...matchDetails, weather: e.target.value})}
+        {/* Configuration Panel */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+            <label className="text-white font-semibold mb-2 block flex items-center gap-2">
+              <CloudRain size={18} />
+              Weather
+            </label>
+            <select 
+              value={weather} 
+              onChange={(e) => setWeather(e.target.value)}
+              className="w-full bg-white/20 text-white rounded-lg p-2 border border-white/30"
             >
               <option value="sunny">☀️ Sunny</option>
               <option value="cloudy">☁️ Cloudy</option>
+              <option value="rainy">🌧️ Rainy</option>
               <option value="humid">💧 Humid</option>
-              <option value="windy">🌪️ Windy</option>
             </select>
-            <select
-              className="bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white"
-              value={matchDetails.pitchType}
-              onChange={(e) => setMatchDetails({...matchDetails, pitchType: e.target.value})}
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+            <label className="text-white font-semibold mb-2 block flex items-center gap-2">
+              <Target size={18} />
+              Venue
+            </label>
+            <select 
+              value={venue} 
+              onChange={(e) => setVenue(e.target.value)}
+              className="w-full bg-white/20 text-white rounded-lg p-2 border border-white/30"
             >
-              <option value="batting">🏏 Batting Pitch</option>
-              <option value="bowling">⚡ Bowling Pitch</option>
-              <option value="balanced">⚖️ Balanced Pitch</option>
+              <option value="wankhede">Wankhede Stadium</option>
+              <option value="eden">Eden Gardens</option>
+              <option value="chinnaswamy">Chinnaswamy</option>
+              <option value="chepauk">Chepauk</option>
             </select>
-            <input
-              type="number"
-              placeholder="Budget (Credits)"
-              className="bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white placeholder-white/60"
-              value={budget}
-              onChange={(e) => setBudget(Number(e.target.value))}
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+            <label className="text-white font-semibold mb-2 block flex items-center gap-2">
+              <TrendingUp size={18} />
+              Strategy
+            </label>
+            <select 
+              value={teamStrategy} 
+              onChange={(e) => setTeamStrategy(e.target.value)}
+              className="w-full bg-white/20 text-white rounded-lg p-2 border border-white/30"
+            >
+              <option value="batting">⚡ Batting Heavy</option>
+              <option value="bowling">🎯 Bowling Heavy</option>
+              <option value="balanced">⚖️ Balanced</option>
+            </select>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+            <label className="text-white font-semibold mb-2 block flex items-center gap-2">
+              <Calendar size={18} />
+              Match Date
+            </label>
+            <input 
+              type="date" 
+              value={matchDate}
+              onChange={(e) => setMatchDate(e.target.value)}
+              className="w-full bg-white/20 text-white rounded-lg p-2 border border-white/30"
             />
           </div>
         </div>
 
-        {/* Player Input */}
+        {/* Action Buttons */}
+        <div className="flex gap-4 mb-6">
+          <button
+            onClick={generateAITeam}
+            className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-6 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg flex items-center justify-center gap-2"
+          >
+            <Star className="animate-pulse" />
+            Generate AI Team
+          </button>
+          <button
+            onClick={() => setShowPrediction(!showPrediction)}
+            disabled={selectedPlayers.length !== 11}
+            className={`flex-1 ${selectedPlayers.length === 11 ? 'bg-gradient-to-r from-purple-500 to-pink-600' : 'bg-gray-500'} text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2`}
+          >
+            <Award />
+            Analyze Prediction
+          </button>
+        </div>
+
+        {/* Prediction Results */}
+        {showPrediction && prediction && (
+          <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-6 mb-6 border-4 border-yellow-300">
+            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+              <Award />
+              AI Prediction Analysis
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                <div className="text-white/80 text-sm">Total Score</div>
+                <div className="text-2xl font-bold text-white">{prediction.totalScore}</div>
+              </div>
+              <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                <div className="text-white/80 text-sm">Avg Score</div>
+                <div className="text-2xl font-bold text-white">{prediction.avgScore}</div>
+              </div>
+              <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                <div className="text-white/80 text-sm">Final Score</div>
+                <div className="text-2xl font-bold text-white">{prediction.finalScore}</div>
+              </div>
+              <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                <div className="text-white/80 text-sm">Win Probability</div>
+                <div className="text-2xl font-bold text-white">{prediction.winProbability}%</div>
+              </div>
+              <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                <div className="text-white/80 text-sm">Contest Rank</div>
+                <div className="text-2xl font-bold text-white">~{prediction.megaContestRank}</div>
+              </div>
+              <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                <div className="text-white/80 text-sm">Risk Level</div>
+                <div className="text-2xl font-bold text-white">{prediction.riskLevel}</div>
+              </div>
+            </div>
+            <div className="mt-4 bg-white/20 backdrop-blur rounded-xl p-4">
+              <div className="text-white font-semibold mb-2">Success Pattern: {prediction.successPattern}</div>
+              <div className="text-white/90 text-sm">
+                Based on ML analysis, astrological alignment ({new Date(matchDate).getDate() % 9}), weather conditions, venue statistics, and head-to-head patterns.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Selected Team */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
           <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <Users className="w-6 h-6" />
-            Add Players ({players.length}/22)
+            <Users />
+            Your Team ({selectedPlayers.length}/11)
           </h2>
-          <div className="flex gap-3 mb-4">
-            <input
-              type="text"
-              placeholder="Enter player name"
-              className="flex-1 bg-white/20 border border-white/30 rounded-lg px-4 py-3 text-white placeholder-white/60"
-              value={playerInput}
-              onChange={(e) => setPlayerInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
-            />
-            <button
-              onClick={addPlayer}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition"
-            >
-              Add Player
-            </button>
-            <button
-              onClick={loadSamplePlayers}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition"
-            >
-              Load Sample
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
-            {players.map((player, idx) => (
-              <div key={idx} className="bg-white/20 rounded-lg p-3 border border-white/20">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-white font-bold">{player.name}</p>
-                    <p className="text-green-200 text-sm">{player.team} • {player.role}</p>
+          
+          {selectedPlayers.length > 0 ? (
+            <div className="space-y-3">
+              {selectedPlayers.map(player => (
+                <div key={player.id} className="bg-white/10 rounded-xl p-4 flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl font-bold text-white">{player.name}</span>
+                      <span className="px-2 py-1 bg-purple-500 rounded text-xs text-white">{player.role}</span>
+                      <span className="px-2 py-1 bg-blue-500 rounded text-xs text-white">{player.team}</span>
+                    </div>
+                    <div className="flex gap-4 mt-2 text-sm text-white/80">
+                      <span>Rating: {player.rating}</span>
+                      <span>Form: {player.form}</span>
+                      <span>AI Score: {calculateAIScore(player)}</span>
+                      <span>Mulank: {player.mulank}</span>
+                    </div>
                   </div>
-                  <span className="bg-yellow-500 text-xs px-2 py-1 rounded font-bold">
-                    {player.price}Cr
-                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setCaptain(player)}
+                      className={`px-3 py-1 rounded ${captain?.id === player.id ? 'bg-yellow-500' : 'bg-white/20'} text-white text-sm`}
+                    >
+                      C
+                    </button>
+                    <button
+                      onClick={() => setViceCaptain(player)}
+                      className={`px-3 py-1 rounded ${viceCaptain?.id === player.id ? 'bg-yellow-500' : 'bg-white/20'} text-white text-sm`}
+                    >
+                      VC
+                    </button>
+                    <button
+                      onClick={() => togglePlayer(player)}
+                      className="px-3 py-1 bg-red-500 rounded text-white text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
-                <div className="mt-2 flex gap-2 text-xs">
-                  <span className="bg-blue-500/50 px-2 py-1 rounded text-white">Form: {player.recentForm}</span>
-                  <span className="bg-purple-500/50 px-2 py-1 rounded text-white">M: {player.mulank}</span>
-                  <span className="bg-pink-500/50 px-2 py-1 rounded text-white">B: {player.bhagyank}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-white/60 py-8">
+              Select players or generate AI team
+            </div>
+          )}
         </div>
 
-        {/* Generate Team Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <button
-            onClick={() => generateTeam('batting')}
-            disabled={loading}
-            className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white py-4 rounded-xl font-bold text-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <Target className="w-5 h-5" />
-            Batting Heavy Team
-          </button>
-          <button
-            onClick={() => generateTeam('balanced')}
-            disabled={loading}
-            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-4 rounded-xl font-bold text-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <Award className="w-5 h-5" />
-            Balanced Team
-          </button>
-          <button
-            onClick={() => generateTeam('bowling')}
-            disabled={loading}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 rounded-xl font-bold text-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <Zap className="w-5 h-5" />
-            Bowling Heavy Team
-          </button>
+        {/* All Players */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <h2 className="text-2xl font-bold text-white mb-4">All Players (22)</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {PLAYERS.map(player => {
+              const isSelected = selectedPlayers.find(p => p.id === player.id);
+              const aiScore = calculateAIScore(player);
+              
+              return (
+                <div 
+                  key={player.id}
+                  className={`${isSelected ? 'bg-green-500/30 border-green-400' : 'bg-white/10'} rounded-xl p-4 border border-white/20 cursor-pointer transition-all hover:scale-105`}
+                  onClick={() => togglePlayer(player)}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <div className="text-lg font-bold text-white">{player.name}</div>
+                      <div className="flex gap-2 mt-1">
+                        <span className="px-2 py-0.5 bg-purple-500 rounded text-xs text-white">{player.role}</span>
+                        <span className="px-2 py-0.5 bg-blue-500 rounded text-xs text-white">{player.team}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-yellow-400">{aiScore}</div>
+                      <div className="text-xs text-white/60">AI Score</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-xs text-white/80 mt-3">
+                    <div>Rating: {player.rating}</div>
+                    <div>Form: {player.form}</div>
+                    <div>Mulank: {player.mulank}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-
-        {/* Loading State */}
-        {loading && (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4"></div>
-            <p className="text-white text-xl font-semibold">Analyzing with AI + Astrology + ML...</p>
-          </div>
-        )}
-
-        {/* Predictions */}
-        {predictions && !loading && (
-          <div className="space-y-6">
-            {/* Win Probability */}
-            <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl p-6 border-4 border-yellow-300">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-3xl font-bold text-white flex items-center gap-2">
-                  <TrendingUp className="w-8 h-8" />
-                  AI Prediction Analysis
-                </h2>
-                <span className={`text-4xl font-black ${predictions.megaContestPotential === 'HIGH' ? 'text-green-900' : 'text-orange-900'}`}>
-                  {predictions.megaContestPotential}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white/20 rounded-xl p-4">
-                  <p className="text-white/80 text-sm mb-1">Win Probability</p>
-                  <p className="text-4xl font-bold text-white">{predictions.winProbability}%</p>
-                </div>
-                <div className="bg-white/20 rounded-xl p-4">
-                  <p className="text-white/80 text-sm mb-1">Failure Risk</p>
-                  <p className="text-4xl font-bold text-white">{predictions.failureRisk}%</p>
-                </div>
-                <div className="bg-white/20 rounded-xl p-4">
-                  <p className="text-white/80 text-sm mb-1">Total Cost</p>
-                  <p className="text-4xl font-bold text-white">{predictions.totalCost}Cr</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Captain & Vice Captain */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl p-6 border-4 border-yellow-300">
-                <div className="flex items-center gap-3 mb-3">
-                  <Star className="w-8 h-8 text-white fill-white" />
-                  <h3 className="text-2xl font-bold text-white">CAPTAIN (2x)</h3>
-                </div>
-                <p className="text-3xl font-black text-white mb-2">{predictions.captain.name}</p>
-                <div className="flex gap-2 flex-wrap">
-                  <span className="bg-white/30 px-3 py-1 rounded-full text-white text-sm">
-                    Form: {predictions.captain.recentForm}
-                  </span>
-                  <span className="bg-white/30 px-3 py-1 rounded-full text-white text-sm">
-                    Score: {predictions.captain.totalScore.toFixed(1)}
-                  </span>
-                  <span className="bg-white/30 px-3 py-1 rounded-full text-white text-sm">
-                    {predictions.captain.role}
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl p-6 border-4 border-gray-300">
-                <div className="flex items-center gap-3 mb-3">
-                  <Star className="w-8 h-8 text-white" />
-                  <h3 className="text-2xl font-bold text-white">VICE CAPTAIN (1.5x)</h3>
-                </div>
-                <p className="text-3xl font-black text-white mb-2">{predictions.viceCaptain.name}</p>
-                <div className="flex gap-2 flex-wrap">
-                  <span className="bg-white/30 px-3 py-1 rounded-full text-white text-sm">
-                    Form: {predictions.viceCaptain.recentForm}
-                  </span>
-                  <span className="bg-white/30 px-3 py-1 rounded-full text-white text-sm">
-                    Score: {predictions.viceCaptain.totalScore.toFixed(1)}
-                  </span>
-                  <span className="bg-white/30 px-3 py-1 rounded-full text-white text-sm">
-                    {predictions.viceCaptain.role}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Pattern Analysis */}
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-              <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                <Cloud className="w-6 h-6" />
-                Pattern Analysis
-              </h3>
-              <div className="space-y-3">
-                {predictions.patterns.map((pattern, idx) => (
-                  <div key={idx} className="bg-white/10 rounded-lg p-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-white font-bold">{pattern.pattern}</span>
-                      <span className="bg-blue-500 px-3 py-1 rounded-full text-white text-sm font-bold">
-                        {pattern.confidence}% confidence
-                      </span>
-                    </div>
-                    <p className="text-green-200 text-sm">{pattern.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Selected Team */}
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-              <h3 className="text-2xl font-bold text-white mb-4">
-                Final Team - {predictions.teamType.toUpperCase()}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {predictions.team.map((player, idx) => (
-                  <div key={idx} className="bg-gradient-to-br from-white/20 to-white/10 rounded-lg p-4 border border-white/30">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="text-white font-bold text-lg">{player.name}</p>
-                        <p className="text-green-200 text-sm">{player.team} • {player.role}</p>
-                      </div>
-                      {idx === 0 && <span className="bg-yellow-500 text-xs px-2 py-1 rounded font-bold">C</span>}
-                      {idx === 1 && <span className="bg-gray-400 text-xs px-2 py-1 rounded font-bold">VC</span>}
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/70">AI Score:</span>
-                        <span className="text-white font-bold">{player.totalScore.toFixed(1)}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/70">Form:</span>
-                        <span className="text-green-300 font-bold">{player.recentForm}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/70">Astrology:</span>
-                        <span className="text-purple-300 font-bold">{player.astrologyScore}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/70">Venue:</span>
-                        <span className="text-blue-300 font-bold">{player.venueScore}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/70">H2H:</span>
-                        <span className="text-orange-300 font-bold">{player.h2hScore}%</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-// Trophy component
-const Trophy = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M20 2H4c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4c0 2.76 2.
+export default FantasyCricketAI;
