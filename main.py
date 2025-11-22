@@ -3,7 +3,7 @@ import { TrendingUp, Users, Target, Star, Zap, CloudRain, Calendar, Award } from
 
 const PLAYERS = [
   // Batsmen
-  { id: 1, name: "Virat Kohli", role: "Batsman", team: "RCB", rating: 95, form: 88, avg: 52.3, sr: 138, venueAvg: 58, recentScores: [73, 45, 89, 12, 67], moonPhase: 0.8, mulank: 5, bhagyank: 8 },
+  { id: 1, name: "Virat Kohli", role: "Batsman", team: "mi", rating: 95, form: 88, avg: 52.3, sr: 138, venueAvg: 58, recentScores: [73, 45, 89, 12, 67], moonPhase: 0.8, mulank: 5, bhagyank: 8 },
   { id: 2, name: "Rohit Sharma", role: "Batsman", team: "MI", rating: 94, form: 85, avg: 48.7, sr: 142, venueAvg: 52, recentScores: [91, 23, 56, 78, 34], moonPhase: 0.7, mulank: 3, bhagyank: 6 },
   { id: 3, name: "KL Rahul", role: "Batsman", team: "LSG", rating: 92, form: 82, avg: 47.2, sr: 135, venueAvg: 49, recentScores: [45, 67, 23, 89, 56], moonPhase: 0.6, mulank: 2, bhagyank: 5 },
   { id: 4, name: "Shubman Gill", role: "Batsman", team: "GT", rating: 90, form: 91, avg: 44.8, sr: 140, venueAvg: 54, recentScores: [78, 92, 45, 67, 88], moonPhase: 0.9, mulank: 7, bhagyank: 9 },
